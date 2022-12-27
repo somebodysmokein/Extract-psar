@@ -1,0 +1,6 @@
+pandas
+wheel
+nsepy
+numpy
+TA-Lib
+requests
