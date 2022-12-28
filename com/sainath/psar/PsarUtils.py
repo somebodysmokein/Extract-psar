@@ -62,16 +62,29 @@ class PsarUtils:
         return pd.DataFrame()
 
     def filterBasedOnCloseValue(self, stocks):
-        if stocks['Close'].item() > self.__crossOver['SAR'].item():
-            print("CrossOver SAR => " + str(self.__crossOver['SAR']) + "; Close Price => "+str(stocks.Close.tail(1).item())+
-                  ", So we enter trade")
-            self.__stocks = pd.concat([self.__stocks, stocks])
-            return self.__stocks
-        else:
+        counter=0
+        print("Calling filterBasedOnCloseValue with "+str(self.__crossOver['SAR'].item()))
+        print(stocks.tail(3))
+        for item in stocks.tail(3).index:
+            print("Counter value => "+ str(counter))
+            if stocks['Close'][item].item() > self.__crossOver['SAR'].item():
+                 counter=counter+1
+        if counter > 2:
             print("CrossOver SAR => " + str(self.__crossOver['SAR']) + "; Close Price => " + str(
                 stocks.Close.item()) +
                   ", Since the Cut off not met, we don't enter trade")
-            emptyFrame=pd.DataFrame()
+            emptyFrame = pd.DataFrame()
             return emptyFrame
+        else:
+            if stocks['Close'].tail(1).item() > self.__crossOver['SAR'].item():
+                print("CrossOver SAR => " + str(self.__crossOver['SAR']) + "; Close Price => " + str(
+                    stocks.Close.tail(1).item()) +
+                      ", So we enter trade")
+                self.__stocks = pd.concat([self.__stocks, stocks.tail(1)])
+                return self.__stocks
+            else:
+                emptyFrame = pd.DataFrame()
+                return emptyFrame
+
         # else:
         #     print("SAR value of " + str(self.__stocks.Symbol.tail(1)) + " is not greater than Close Price")

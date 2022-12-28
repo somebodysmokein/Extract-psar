@@ -12,7 +12,7 @@ print(symboldf)
 
 
 def psarSignal(symbol):
-    print(datetime.now().date())
+    print("Symbol => "+ str(datetime.now().date()))
     date_object = datetime.strptime(str(datetime.now().date()), '%Y-%m-%d').date()
     data = getPrice(symbol=symbol, today=date_object, numdays=90)
     print(data)
@@ -24,9 +24,10 @@ def psarSignal(symbol):
         cross_over_data = psarObj.getCrossOver(stocks=data)
         if not cross_over_data.empty:
             if not data.empty:
-                psar_based_stock_list = psarObj.filterBasedOnCloseValue(stocks=data.tail(1))
+                psar_based_stock_list = psarObj.filterBasedOnCloseValue(stocks=data)
                 if not psar_based_stock_list.empty:
                     psar_based_stock_list=psar_based_stock_list.dropna()
+                    print("Filtered Stocks => "+ str(psar_based_stock_list))
                     if psar_based_stock_list['Close'].item() > psar_based_stock_list['SAR'].item():
                         psar_based_stock_list['Signal'] = "Buy"
                     else:
@@ -90,5 +91,7 @@ if __name__ == '__main__':
     with ThreadPoolExecutor(max_workers=30) as exe:
         exe.map(asyncTask,symbols)
     stockList=stockList.dropna()
-    stockList.to_csv('finalized-list.csv')
+    print("Stokclist => "+str(stockList))
+    stockList.loc[stockList['Signal'] == 'Buy'].to_csv('finalized-list.csv')
+    #stockList.to_csv('finalized-list.csv')
 
